@@ -31,7 +31,7 @@ class DB
      *
      * @var array
      */
-    static protected $mysql_credentials = array();
+    static protected $mysql_credentials = [];
 
     /**
      * PDO object
@@ -61,12 +61,13 @@ class DB
         self::$table_prefix = $table_prefix;
 
         $dsn = 'mysql:host=' . $credentials['host'] . ';dbname=' . $credentials['database'];
-        $options = array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',);
+        $options = array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4',);
+
         try {
             $pdo = new \PDO($dsn, $credentials['user'], $credentials['password'], $options);
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING);
-            //Define table
 
+            //Define table
             if (!defined('TB_MESSAGES')) {
                 define('TB_MESSAGES', self::$table_prefix.'messages');
             }
@@ -124,14 +125,12 @@ class DB
 
             $tokens = [];
             if (!is_null($limit)) {
-                //$query .=' LIMIT :limit ';
-                //$tokens[':limit'] = $limit;
 
-                $query .=' LIMIT '.$limit;
+                $query .=' LIMIT :limit';
             }
-            //echo $query;
             $sth = self::$pdo->prepare($query);
-            //$sth->execute($tokens);
+
+            $sth->bindParam(':limit',  $limit, \PDO::PARAM_INT);
             $sth->execute();
             $results = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -216,8 +215,6 @@ class DB
         }
     }
 
-
-
     /**
      * Insert request in db
      *
@@ -233,7 +230,6 @@ class DB
 
         $from = $message->getFrom();
         $chat = $message->getChat();
-
 
         $chat_id = $chat->getId();
 
@@ -357,8 +353,8 @@ class DB
             $sth->bindParam(':new_chat_participant', $new_chat_paticipant, \PDO::PARAM_STR);
             $sth->bindParam(':left_chat_participant', $left_chat_paticipant, \PDO::PARAM_STR);
             $sth->bindParam(':new_chat_title', $new_chat_title, \PDO::PARAM_STR);
-            //Array of Photosize
 
+            //Array of Photosize
             $var = [];
             if (is_array($new_chat_photo)) {
                 foreach ($new_chat_photo as $elm) {
@@ -443,7 +439,6 @@ class DB
             }
 
             $query .= ' ORDER BY '.TB_CHATS.'.`updated_at` ASC';
-            //echo $query."\n";
 
             $sth = self::$pdo->prepare($query);
             $sth->execute($tokens);
