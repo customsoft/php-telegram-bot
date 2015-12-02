@@ -125,12 +125,11 @@ class DB
 
             $tokens = [];
             if (!is_null($limit)) {
-
                 $query .=' LIMIT :limit';
             }
             $sth = self::$pdo->prepare($query);
 
-            $sth->bindParam(':limit',  $limit, \PDO::PARAM_INT);
+            $sth->bindParam(':limit', $limit, \PDO::PARAM_INT);
             $sth->execute();
             $results = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
