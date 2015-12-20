@@ -29,7 +29,7 @@ class Telegram
      *
      * @var string
      */
-    protected $version = '0.20.2';
+    protected $version = '0.24.0';
 
     /**
      * Telegram API key
@@ -85,16 +85,13 @@ class Telegram
      *
      * @var string
      */
-
     protected $upload_path;
-
 
     /**
      * Dowload Path
      *
      * @var string
      */
-
     protected $download_path;
 
     /**
@@ -110,6 +107,7 @@ class Telegram
      * @var boolean
      */
     protected $mysql_enabled = false;
+
     /**
      * PDO object
      *
@@ -123,7 +121,6 @@ class Telegram
      * @var array
      */
     protected $commands_config;
-
 
     /**
      * Message types
@@ -141,7 +138,6 @@ class Telegram
      */
     protected $admins_list = [];
 
-
     /**
      * Admin
      *
@@ -149,7 +145,6 @@ class Telegram
      */
 
     protected $admin_enabled = false;
-
 
     /**
      * Constructor
@@ -326,7 +321,6 @@ class Telegram
         return $this;
     }
 
-
     /**
      * Get custom update string for debug purposes
      *
@@ -337,11 +331,10 @@ class Telegram
         return $this->update;
     }
 
-
     /**
      * Handle getUpdates method
      *
-     * @return \Longman\TelegramBot\Telegram
+     *
      */
 
     public function handleGetUpdates($limit = null, $timeout = null)
@@ -355,25 +348,23 @@ class Telegram
         } else {
             $offset = null;
         }
-        //arrive a server Response object
+
         $ServerResponse = Request::getUpdates([
             'offset' => $offset ,
             'limit' => $limit,
             'timeout' => $timeout
         ]);
+
+        
         if ($ServerResponse->isOk()) {
             $results = '';
             $n_update = count($ServerResponse->getResult());
             for ($a = 0; $a < $n_update; $a++) {
                 $result = $this->processUpdate($ServerResponse->getResult()[$a]);
             }
-            print(date('Y-m-d H:i:s', time()).' - Processed '.$a." updates\n");
-        } else {
-            print(date('Y-m-d H:i:s', time())." - Fail fetch updates\n");
-            echo $ServerResponse->printError()."\n";
         }
 
-        //return $results
+        return $ServerResponse;
     }
 
     /**
@@ -405,11 +396,11 @@ class Telegram
 
     public function processUpdate(update $update)
     {
-
         //Load admin Commands
         if ($this->admin_enabled) {
             $message = $update->getMessage();
 
+            //Admin command avaiable in any chats
             //$from = $message->getFrom();
             //$user_id = $from->getId();
 
@@ -470,7 +461,6 @@ class Telegram
     {
         $class = $this->getCommandClass($command, $update);
 
-        //print_r($class);
         if (!$class) {
             //handle a generic command or non existing one
             return $this->executeCommand('Generic', $update);
@@ -480,8 +470,8 @@ class Telegram
             return false;
         }
 
-        //execute methods will be execute after preexecution
-        //this for prevent to execute db query witout connection
+        //execute() methods will be execute after preexecute() methods
+        //this for prevent to execute db query without connection
         return $class->preExecute();
     }
 
@@ -533,7 +523,6 @@ class Telegram
     protected function sanitizeCommand($string, $capitalizeFirstCharacter = false)
     {
         $str = str_replace(' ', '', ucwords(str_replace('_', ' ', $string)));
-        //$str[0] = strtolower($str[0]);
         return $str;
     }
 
@@ -596,11 +585,6 @@ class Telegram
      */
     public function setUploadPath($folder)
     {
-        //if (!is_dir($folder)) {
-        //    if(!mkdir($folder, 0755, true)) {
-        //        throw new TelegramException('Directory '.$folder.' cant be created');
-        //    }
-        //}
         $this->upload_path = $folder;
         return $this;
     }
@@ -622,11 +606,6 @@ class Telegram
      */
     public function setDownloadPath($folder)
     {
-        //if (!is_dir($folder)) {
-        //    if(!mkdir($folder, 0755, true)) {
-        //        throw new TelegramException('Directory '.$folder.' cant be created');
-        //    }
-        //}
         $this->download_path = $folder;
         return $this;
     }
@@ -732,6 +711,7 @@ class Telegram
 
         return $result;
     }
+
     /**
      * Get available message types
      *
@@ -741,6 +721,7 @@ class Telegram
     {
         return $this->message_types;
     }
+
     /**
      * Get list of admins
      *
