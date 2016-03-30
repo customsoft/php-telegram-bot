@@ -61,6 +61,15 @@ class Message extends Entity
 
     protected $group_chat_created;
 
+    protected $supergroup_chat_created;
+
+    protected $channel_chat_created;
+
+    protected $migrate_to_chat_id;
+
+    protected $migrate_from_chat_id;
+
+
     private $command;
 
     private $type;
@@ -81,7 +90,7 @@ class Message extends Entity
     {
         $this->bot_name = $bot_name;
 
-        $this->type = 'text';
+        $this->type = 'Message';
 
         $this->message_id = isset($data['message_id']) ? $data['message_id'] : null;
         if (empty($this->message_id)) {
@@ -120,11 +129,13 @@ class Message extends Entity
         $this->audio = isset($data['audio']) ? $data['audio'] : null;
         if (!empty($this->audio)) {
             $this->audio = new Audio($this->audio);
+            $this->type = 'Audio';
         }
 
         $this->document = isset($data['document']) ? $data['document'] : null;
         if (!empty($this->document)) {
             $this->document = new Document($this->document);
+            $this->type = 'Document';
         }
 
         $this->photo = isset($data['photo']) ? $data['photo'] : null; //array of photosize
@@ -135,21 +146,25 @@ class Message extends Entity
                 }
             }
             $this->photo = $photos;
+            $this->type = 'Photo';
         }
 
         $this->sticker = isset($data['sticker']) ? $data['sticker'] : null;
         if (!empty($this->sticker)) {
             $this->sticker = new Sticker($this->sticker);
+            $this->type = 'Sticker';
         }
 
         $this->video = isset($data['video']) ? $data['video'] : null;
         if (!empty($this->video)) {
             $this->video = new Video($this->video);
+            $this->type = 'Video';
         }
 
         $this->voice = isset($data['voice']) ? $data['voice'] : null;
         if (!empty($this->voice)) {
             $this->voice = new Voice($this->voice);
+            $this->type = 'Voice';
         }
 
         $this->caption = isset($data['caption']) ? $data['caption'] : null;//string
@@ -162,6 +177,7 @@ class Message extends Entity
         $this->location = isset($data['location']) ? $data['location'] : null;
         if (!empty($this->location)) {
             $this->location = new Location($this->location);
+            $this->type = 'Location';
         }
 
         $this->new_chat_participant = isset($data['new_chat_participant']) ? $data['new_chat_participant'] : null;
@@ -177,7 +193,7 @@ class Message extends Entity
         }
 
         $this->new_chat_title = isset($data['new_chat_title']) ? $data['new_chat_title'] : null;
-        if ($this->new_chat_title) {
+        if (!is_null($this->new_chat_title)) {
             $this->type = 'new_chat_title';
         }
 
@@ -201,13 +217,26 @@ class Message extends Entity
             $this->type = 'group_chat_created';
         }
 
+        $this->supergroup_chat_created = isset($data['supergroup_chat_created']) ? $data['supergroup_chat_created'] : null;
+        if ($this->supergroup_chat_created) {
+            $this->type = 'supergroup_chat_created';
+        }
+
+        $this->channel_chat_created = isset($data['channel_chat_created']) ? $data['channel_chat_created'] : null;
+        if ($this->channel_chat_created) {
+            $this->type = 'channel_chat_created';
+        }
+
+        $this->migrate_to_chat_id = isset($data['migrate_to_chat_id']) ? $data['migrate_to_chat_id'] : null;
+        $this->migrate_from_chat_id = isset($data['migrate_from_chat_id']) ? $data['migrate_from_chat_id'] : null;
+
     }
 
     //return the entire command like /echo or /echo@bot1 if specified
     public function getFullCommand()
     {
         if (substr($this->text, 0, 1) === '/') {
-            $no_EOL =  strtok($this->text, PHP_EOL);
+            $no_EOL = strtok($this->text, PHP_EOL);
             $no_space = strtok($this->text, ' ');
 
             //try to understand which separator \n or space divide /command from text
@@ -373,6 +402,25 @@ class Message extends Entity
         return $this->group_chat_created;
     }
 
+    public function getSupergroupChatCreated()
+    {
+        return $this->supergroup_chat_created;
+    }
+
+    public function getChannelChatCreated()
+    {
+        return $this->channel_chat_created;
+    }
+
+    public function getMigrateToChatId()
+    {
+        return $this->migrate_to_chat_id;
+    }
+
+    public function getMigrateFromChatId()
+    {
+        return $this->migrate_from_chat_id;
+    }
 
     public function botAddedInChat()
     {
