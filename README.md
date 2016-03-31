@@ -392,7 +392,7 @@ You can also store inline query and chosen inline query in the database.
 Is possible to provide to the library an external mysql connection. Here's how to configure it:
 
 ```php
-$telegram->enableExternalMySQL($external_pdo_connection)
+$telegram->enableExternalMysql($external_pdo_connection)
 //$telegram->enableExternalMySQL($external_pdo_connection, $table_prefix)
 ```
 ### Channels Support
@@ -489,7 +489,6 @@ $telegram->setUploadPath('yourpath/Upload');
 
 ### Logging
 Thrown Exceptions are not stored by default. You can Enable this feature adding this line in your 'webhook.php' or 'getUpdates.php'
->>>>>>> feature/logger
 
 ```php
     Longman\TelegramBot\Logger::initialize('your_path/TelegramException.log');
