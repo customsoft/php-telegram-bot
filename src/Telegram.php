@@ -30,7 +30,7 @@ class Telegram
      *
      * @var string
      */
-    protected $version = '0.29.0';
+    protected $version = '0.30.0';
 
     /**
      * Telegram API key
@@ -167,9 +167,9 @@ class Telegram
     }
 
     /**
-     * Initialize
+     * Initialize Database connection
      *
-     * @param array $credential
+     * @param array  $credential
      * @param string $table_prefix
      *
      * @return Telegram
@@ -180,6 +180,19 @@ class Telegram
         ConversationDB::initializeConversation();
         $this->mysql_enabled = true;
         return $this;
+    }
+
+    /**
+     * Initialize Database external connection
+     *
+     * @param PDO    $external_pdo_connection PDO database object
+     * @param string $table_prefix
+     */
+    public function enableExternalMysql($external_pdo_connection, $table_prefix = null)
+    {
+        $this->pdo = DB::externalInitialize($external_pdo_connection, $this, $table_prefix);
+        ConversationDB::initializeConversation();
+        $this->mysql_enabled = true;
     }
 
     /**
@@ -455,7 +468,10 @@ class Telegram
                 'delete_chat_photo',
                 'group_chat_created',
                 'left_chat_participant',
+                'migrate_from_chat_id',
+                'migrate_to_chat_id',
                 'new_chat_participant',
+                'new_chat_photo',
                 'new_chat_title',
                 'supergroup_chat_created',
             ])) {

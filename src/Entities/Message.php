@@ -205,6 +205,7 @@ class Message extends Entity
                 }
             }
             $this->new_chat_photo = $photos;
+            $this->type = 'new_chat_photo';
         }
 
         $this->delete_chat_photo = isset($data['delete_chat_photo']) ? $data['delete_chat_photo'] : null;
@@ -228,7 +229,13 @@ class Message extends Entity
         }
 
         $this->migrate_to_chat_id = isset($data['migrate_to_chat_id']) ? $data['migrate_to_chat_id'] : null;
+        if ($this->migrate_to_chat_id) {
+            $this->type = 'migrate_to_chat_id';
+        }
         $this->migrate_from_chat_id = isset($data['migrate_from_chat_id']) ? $data['migrate_from_chat_id'] : null;
+        if ($this->migrate_from_chat_id) {
+            $this->type = 'migrate_from_chat_id';
+        }
 
     }
 

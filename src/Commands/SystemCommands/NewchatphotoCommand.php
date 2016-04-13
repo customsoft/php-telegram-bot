@@ -13,15 +13,15 @@ namespace Longman\TelegramBot\Commands\SystemCommands;
 use Longman\TelegramBot\Commands\SystemCommand;
 
 /**
- * Super group chat created command
+ * New chat photo command
  */
-class SupergroupchatcreatedCommand extends SystemCommand
+class NewchatphotoCommand extends SystemCommand
 {
     /**#@+
      * {@inheritdoc}
      */
-    protected $name = 'Supergroupchatcreated';
-    protected $description = 'Super group chat created';
+    protected $name = 'Newchatphoto';
+    protected $description = 'New chat Photo';
     protected $version = '1.0.1';
     /**#@-*/
 
@@ -31,6 +31,6 @@ class SupergroupchatcreatedCommand extends SystemCommand
     /*public function execute()
     {
         //$message = $this->getMessage();
-        //$supergroup_chat_created = $message->getSuperGroupChatCreated();
+        //$new_chat_photo = $message->getNewChatPhoto();
     }*/
 }

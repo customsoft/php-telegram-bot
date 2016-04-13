@@ -388,7 +388,13 @@ $telegram->enableMySQL($mysql_credentials, $BOT_NAME . '_');
 
 Consider to use the *utf8mb4* branch if you find some special characters problems.
 You can also store inline query and chosen inline query in the database.
+#### External Database connection
+Is possible to provide to the library an external mysql connection. Here's how to configure it:
 
+```php
+$telegram->enableExternalMysql($external_pdo_connection)
+//$telegram->enableExternalMySQL($external_pdo_connection, $table_prefix)
+```
 ### Channels Support
 
 All methods implemented can be used to manage channels.
@@ -481,9 +487,12 @@ $telegram->setDownloadPath('yourpath/Download');
 $telegram->setUploadPath('yourpath/Upload');
 ```
 
-## Logging
+### Logging
+Thrown Exceptions are not stored by default. You can Enable this feature adding this line in your 'webhook.php' or 'getUpdates.php'
 
-Thrown Exceptions are stored in *TelegramException.log* file (in the base directory).
+```php
+    Longman\TelegramBot\Logger::initialize('your_path/TelegramException.log');
+```
 
 Incoming update (json string from webhook and getUpdates) can be logged in a text file. Set those options with the methods:
 ```php
