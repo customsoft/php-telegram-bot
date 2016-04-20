@@ -30,7 +30,7 @@ class Telegram
      *
      * @var string
      */
-    protected $version = '0.30.0';
+    protected $version = '0.31.0';
 
     /**
      * Telegram API key
@@ -252,7 +252,7 @@ class Telegram
         $which[] = 'User';
 
         foreach ($which as $auth) {
-            $command_namespace = __NAMESPACE__ . '\\Commands\\' . $auth . 'Commands\\' . ucfirst($command) . 'Command';
+            $command_namespace = __NAMESPACE__ . '\\Commands\\' . $auth . 'Commands\\' . $this->ucfirstUnicode($command) . 'Command';
             if (class_exists($command_namespace)) {
                 return new $command_namespace($this, $this->update);
             }
@@ -430,7 +430,7 @@ class Telegram
      */
     private function getCommandFromType($type)
     {
-        return ucfirst(str_replace('_', '', $type));
+        return $this->ucfirstUnicode(str_replace('_', '', $type));
     }
 
     /**
@@ -448,7 +448,7 @@ class Telegram
         $command = 'genericmessage';
 
         $update_type = $this->update->getUpdateType();
-        if (in_array($update_type, ['inline_query', 'chosen_inline_result'])) {
+        if (in_array($update_type, ['inline_query', 'chosen_inline_result', 'callback_query'])) {
             $command = $this->getCommandFromType($update_type);
         } elseif ($update_type === 'message') {
             $message = $this->update->getMessage();
@@ -467,10 +467,10 @@ class Telegram
                 'channel_chat_created',
                 'delete_chat_photo',
                 'group_chat_created',
-                'left_chat_participant',
+                'left_chat_member',
                 'migrate_from_chat_id',
                 'migrate_to_chat_id',
-                'new_chat_participant',
+                'new_chat_member',
                 'new_chat_photo',
                 'new_chat_title',
                 'supergroup_chat_created',
@@ -521,7 +521,7 @@ class Telegram
      */
     protected function sanitizeCommand($command)
     {
-        return str_replace(' ', '', ucwords(str_replace('_', ' ', $command)));
+        return str_replace(' ', '', $this->ucwordsUnicode(str_replace('_', ' ', $command)));
     }
 
     /**
@@ -758,5 +758,31 @@ class Telegram
         }
 
         return $result;
+    }
+
+    /**
+     * Replace function `ucwords` for UTF-8 characters in the class definition and commands
+     *
+     * @param string $str
+     * @param string $encoding (default = 'UTF-8')
+     *
+     * @return string
+     */
+    protected function ucwordsUnicode($str, $encoding = 'UTF-8')
+    {
+        return mb_convert_case($str, MB_CASE_TITLE, $encoding);
+    }
+
+    /**
+     * Replace function `ucfirst` for UTF-8 characters in the class definition and commands
+     *
+     * @param string $str
+     * @param string $encoding (default = 'UTF-8')
+     *
+     * @return string
+     */
+    protected function ucfirstUnicode($str, $encoding = 'UTF-8')
+    {
+        return mb_strtoupper(mb_substr($str, 0, 1, $encoding), $encoding) . mb_strtolower(mb_substr($str, 1, mb_strlen($str), $encoding), $encoding);
     }
 }
