@@ -1,20 +1,21 @@
 <?php
-
-/*
+/**
  * This file is part of the TelegramBot package.
  *
  * (c) Avtandil Kikabidze aka LONGMAN <akalongman@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
-*/
+ */
+
 namespace Longman\TelegramBot\Entities;
 
 use Longman\TelegramBot\Exception\TelegramException;
 
 class InlineQueryResultArticle extends InlineQueryResult
 {
-    protected $message_text;
+    protected $title;
+    protected $input_message_content;
     protected $url;
     protected $hide_url;
     protected $description;
@@ -28,9 +29,14 @@ class InlineQueryResultArticle extends InlineQueryResult
 
         $this->type = 'article';
 
-        $this->message_text = isset($data['message_text']) ? $data['message_text'] : null;
-        if (empty($this->message_text)) {
-            throw new TelegramException('message_text is empty!');
+        $this->title = isset($data['title']) ? $data['title'] : null;
+        if (empty($this->title)) {
+            throw new TelegramException('title is empty!');
+        }
+
+        $this->input_message_content = isset($data['input_message_content']) ? $data['input_message_content'] : null;
+        if (empty($this->input_message_content)) {
+            throw new TelegramException('input_message_content is empty!');
         }
 
         $this->url = isset($data['url']) ? $data['url'] : null;
@@ -42,9 +48,14 @@ class InlineQueryResultArticle extends InlineQueryResult
 
     }
 
-    public function getMessageText()
+    public function getTitle()
     {
-        return $this->message_text;
+        return $this->title;
+    }
+
+    public function getInputMessageContent()
+    {
+        return $this->input_message_content;
     }
 
     public function getUrl()
