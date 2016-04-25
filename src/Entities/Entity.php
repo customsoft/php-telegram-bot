@@ -29,7 +29,6 @@ class Entity
         return $json;
     }
 
-
     public function reflect($object = null)
     {
         if ($object == null) {
@@ -43,19 +42,28 @@ class Entity
 
         foreach ($properties as $property) {
             $name = $property->getName();
-
             if ($name == 'bot_name') {
                 continue;
             }
 
             if (!$property->isPrivate()) {
                 $array_of_obj = false;
+                $array_of_array_obj = false;
                 if (is_array($object->$name)) {
                     $array_of_obj = true;
+                    $array_of_array_obj = true;
                     foreach ($object->$name as $elm) {
                         if (!is_object($elm)) {
+                            //echo $name . " not array of object \n";
                             $array_of_obj = false;
-                            break;
+                            //break;
+                        }
+                        if (is_array($elm)) {
+                            foreach ($elm as $more_net) {
+                                if (!is_object($more_net)) {
+                                    $array_of_array_obj = false;
+                                }
+                            }
                         }
                     }
                 }
@@ -65,6 +73,14 @@ class Entity
                 } elseif ($array_of_obj) {
                     foreach ($object->$name as $elm) {
                         $fields[$name][] = $this->reflect($elm);
+                    }
+                } elseif ($array_of_array_obj) {
+                    foreach ($object->$name as $elm) {
+                        $temp = null;
+                        foreach ($elm as $obj) {
+                            $temp[] = $this->reflect($obj);
+                        }
+                        $fields[$name][] = $temp;
                     }
                 } else {
                     $property->setAccessible(true);
@@ -78,7 +94,6 @@ class Entity
         }
         return $fields;
     }
-
 
     public function __toString()
     {
