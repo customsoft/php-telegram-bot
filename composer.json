@@ -20,7 +20,9 @@
     "require": {
         "php": ">=5.5.0",
         "ext-pdo": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "monolog/monolog": "^1.19",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
         "psr-4": {

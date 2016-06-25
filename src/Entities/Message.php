@@ -28,6 +28,8 @@ class Message extends Entity
 
     protected $forward_date;
 
+    protected $edit_date;
+
     protected $reply_to_message;
 
     protected $text;
@@ -122,7 +124,6 @@ class Message extends Entity
         $this->forward_from = isset($data['forward_from']) ? $data['forward_from'] : null;
         if (!empty($this->forward_from)) {
             $this->forward_from = new User($this->forward_from);
-
         }
 
         $this->forward_from_chat = isset($data['forward_from_chat']) ? $data['forward_from_chat'] : null;
@@ -131,6 +132,8 @@ class Message extends Entity
         }
 
         $this->forward_date = isset($data['forward_date']) ? $data['forward_date'] : null;
+
+        $this->edit_date = isset($data['edit_date']) ? $data['edit_date'] : null;
 
         $this->text = isset($data['text']) ? $data['text'] : null;
         $command = $this->getCommand();
@@ -359,6 +362,11 @@ class Message extends Entity
     public function getForwardDate()
     {
         return $this->forward_date;
+    }
+
+    public function getEditDate()
+    {
+        return $this->edit_date;
     }
 
     public function getReplyToMessage()

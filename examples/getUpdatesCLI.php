@@ -4,8 +4,8 @@
 //This configuration file is intented to run the bot with the webhook method
 //Uncommented parameters must be filled
 
-#bash script
-#while true; do ./getUpdatesCLI.php; done
+//bash script
+//while true; do ./getUpdatesCLI.php; done
 
 // Load composer
 require __DIR__ . '/vendor/autoload.php';
@@ -42,13 +42,17 @@ try {
     //$telegram->setCommandConfig('date', ['google_api_key' => 'your_google_api_key_here']);
 
     //// Logging
-    //$telegram->setLogRequests(true);
-    //$telegram->setLogPath($BOT_NAME . '.log');
-    //$telegram->setLogVerbosity(3);
+    //\Longman\TelegramBot\TelegramLog::initialize($your_external_monolog_instance);
+    //\Longman\TelegramBot\TelegramLog::initErrorLog($path . '/' . $BOT_NAME . '_error.log');
+    //\Longman\TelegramBot\TelegramLog::initDebugLog($path . '/' . $BOT_NAME . '_debug.log');
+    //\Longman\TelegramBot\TelegramLog::initUpdateLog($path . '/' . $BOT_NAME . '_update.log');
 
     //// Set custom Upload and Download path
     //$telegram->setDownloadPath('../Download');
     //$telegram->setUploadPath('../Upload');
+
+    //// Botan.io integration
+    //$telegram->enableBotan('your_token');
 
     // Handle telegram getUpdate request
     $ServerResponse = $telegram->handleGetUpdates();
@@ -61,6 +65,10 @@ try {
         echo $ServerResponse->printError() . "\n";
     }
 } catch (Longman\TelegramBot\Exception\TelegramException $e) {
+    echo $e;
     // log telegram errors
+    \Longman\TelegramBot\TelegramLog::error($e);
+} catch (Longman\TelegramBot\Exception\TelegramLogException $e) {
+    //catch log initilization errors
     echo $e;
 }

@@ -34,6 +34,7 @@ A Telegram Bot based on the official [Telegram Bot API](https://core.telegram.or
 - [Utils](#utils)
     - [MySQL storage (Recommended)](#mysql-storage-recommended)
     - [Channels Support](#channels-support)
+    - [Botan.io integration (Optional)](#botanio-integration-optional)
 - [Commands](#commands)
     - [Predefined Commands](#predefined-commands)
     - [Custom Commands](#custom-commands)
@@ -42,7 +43,7 @@ A Telegram Bot based on the official [Telegram Bot API](https://core.telegram.or
     - [Set Admins](#set-admins)
     - [Channel Administration](#channel-administration)
 - [Upload and Download directory path](#upload-and-download-directory-path)
-- [Logging](#logging)
+- [Logging](doc/01-utils.md)
 - [Documentation](#documentation)
 - [Projects with this library](#projects-with-this-library)
 - [Troubleshooting](#troubleshooting)
@@ -66,14 +67,15 @@ and have interactions in a matter of minutes.
 
 The Bot can:
 - retrieve updates with webhook and getUpdate methods.
-- supports all types and methods according to Telegram API (6 May 2016).
+- supports all types and methods according to Telegram API (25 May 2016).
 - supports supergroups.
 - handle commands in chat with other bots.
 - manage Channel from the bot admin interface.
 - full support for **inline bots**. 
 - inline keyboard.
 - Messages, InlineQuery and ChosenInlineQuery are stored in the Database.
-- Conversation feature (**new!**)
+- *Botan.io* integration and database cache system. (**new!**)
+- Conversation feature  
 
 -----
 This code is available on
@@ -401,6 +403,27 @@ $telegram->enableExternalMysql($external_pdo_connection)
 All methods implemented can be used to manage channels.
 With [admin commands](#admin-commands) you can manage your channels directly with your bot private chat.
 
+### Botan.io integration (Optional)
+
+You can enable the integration using this line:
+
+```php
+$telegram->enableBotan('your_token');
+```
+
+Replace ```'your_token'``` with your Botan.io token, check [this page](https://github.com/botanio/sdk#creating-an-account) to see how to obtain one.
+
+The following actions will be tracked:
+- Commands (shown as `Command (/command_name)` in the stats
+- Inline Queries, Chosen Inline Results and Callback Queries
+- Messages sent to the bot (or replies in groups)
+
+In order to use the URL shortener you must include the class ```use Longman\TelegramBot\Botan;``` and call it like this:
+
+```Botan::shortenUrl('https://github.com/akalongman/php-telegram-bot', $user_id);```
+
+Shortened URLs are cached in the database (if MySQL storage is enabled).
+
 ### Commands
 
 #### Predefined Commands
@@ -441,10 +464,14 @@ Inside *examples/Commands/* there are some samples that show how to use types.
 
 #### Commands Configuration
 
-With this method you can set some command specific parameters, for
-example, google geocode/timezone api key for date command:
+With this method you can set some command specific parameters:
+
 ```php
+//Google geocode/timezone API key for date command
 $telegram->setCommandConfig('date', ['google_api_key' => 'your_google_api_key_here']);
+
+//OpenWeatherMap API key for weather command
+$telegram->setCommandConfig('weather', ['owm_api_key' => 'your_owm_api_key_here']);
 ```
 
 ### Admin Commands
@@ -487,27 +514,6 @@ You can override the default Upload and Download directory with:
 ```php
 $telegram->setDownloadPath('yourpath/Download');
 $telegram->setUploadPath('yourpath/Upload');
-```
-
-### Logging
-Thrown Exceptions are not stored by default. You can Enable this feature adding this line in your 'webhook.php' or 'getUpdates.php'
-
-```php
-    Longman\TelegramBot\Logger::initialize('your_path/TelegramException.log');
-```
-
-Incoming update (json string from webhook and getUpdates) can be logged in a text file. Set those options with the methods:
-```php
-$telegram->setLogRequests(true);
-$telegram->setLogPath($BOT_NAME . '.log');
-```
-
-Set verbosity to 3 to also log curl requests and responses from the bot to Telegram:
-
-```php
-$telegram->setLogRequests(true);
-$telegram->setLogPath($BOT_NAME . '.log');
-$telegram->setLogVerbosity(3);
 ```
 
 ## Documentation
