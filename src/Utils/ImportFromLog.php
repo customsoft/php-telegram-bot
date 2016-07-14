@@ -31,12 +31,15 @@ class ImportFromLog
     public function importFile($filename)
     {
         $update = null;
+        $line_update_counter = 0;
+        $line_counter = 0;
         try {
             foreach (new \SplFileObject($filename) as $current_line) {
                 $json_decoded = json_decode($update, true);
                 if (!is_null($json_decoded)) {
                     echo $update . "\n\n";
                     $update = null;
+                    $line_update_counter = 0;
                     if (empty($json_decoded)) {
                         echo "Empty update: \n";
                         echo $update . "\n\n";
@@ -45,6 +48,12 @@ class ImportFromLog
                     $this->telegram->processUpdate(new Update($json_decoded, 'anybot'));
                 }
                 $update .= $current_line;
+                $line_update_counter++;
+                $line_counter++;
+                if ($line_update_counter > 30 ) {
+                    echo 'Something is wrong in the update format line: ' . ($line_counter - $line_update_counter) . "\n";
+                    break;
+                }
             }
         } catch (TelegramException $e) {
             return $e;
@@ -52,40 +61,3 @@ class ImportFromLog
         return 1;
     }
 }
-
-
-
-
-
-
-//$filename='logfile.log';
-//$CREDENTIALS = array('host'=>'localhost', 'user'=>'', 'password'=>'', 'database'=>'');
-//
-//$update = null;
-//try {
-//    // Create Telegram API object
-//    $telegram = new Longman\TelegramBot\Telegram($API_KEY, $BOT_NAME);
-//    $telegram->enableMySQL($CREDENTIALS);
-//    foreach (new SplFileObject($filename) as $current_line) {
-//        $json_decoded = json_decode($update, true);
-//        if (!is_null($json_decoded)) {
-//            echo $update . "\n\n";
-//            $update = null;
-//            if (empty($json_decoded)) {
-//                echo "Empty update: \n";
-//                echo $update . "\n\n";
-//                continue;
-//            }
-//            $telegram->processUpdate(new Longman\TelegramBot\Entities\Update($json_decoded, $BOT_NAME));
-//        }
-//        $update .= $current_line;
-//    }
-//
-//} catch (Longman\TelegramBot\Exception\TelegramException $e) {
-//    // log telegram errors
-//    echo $e;
-//}
-    
-
-
-
