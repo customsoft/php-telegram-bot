@@ -37,7 +37,7 @@ class ImportFromLog
             foreach (new \SplFileObject($filename) as $current_line) {
                 $json_decoded = json_decode($update, true);
                 if (!is_null($json_decoded)) {
-                    echo $update . "\n\n";
+                    //echo $update . "\n\n";
                     $update = null;
                     $line_update_counter = 0;
                     if (empty($json_decoded)) {
@@ -50,8 +50,9 @@ class ImportFromLog
                 $update .= $current_line;
                 $line_update_counter++;
                 $line_counter++;
-                if ($line_update_counter > 30 ) {
+                if ($line_update_counter > 30) {
                     echo 'Something is wrong in the update format line: ' . ($line_counter - $line_update_counter) . "\n";
+                    echo $update . "\n\n";
                     break;
                 }
             }
