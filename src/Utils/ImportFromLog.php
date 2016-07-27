@@ -53,7 +53,7 @@ class ImportFromLog
                 if ($line_update_counter > 30) {
                     echo 'Something is wrong in the update format line: ' . ($line_counter - $line_update_counter) . "\n";
                     echo $update . "\n\n";
-                    break;
+                    return 0;
                 }
             }
         } catch (TelegramException $e) {
