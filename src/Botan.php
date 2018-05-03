@@ -23,6 +23,13 @@ use Longman\TelegramBot\Exception\TelegramException;
 class Botan
 {
     /**
+     * Telegram Bot id
+     *
+     * @var string
+     */
+    protected static $bot_id;
+
+    /**
      * Botan.io API URL
      *
      * @var string
@@ -62,7 +69,7 @@ class Botan
      *
      * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-    public static function initializeBotan($token, array $options = [])
+    public static function initializeBotan($token, array $options = [], $bot_id = 0)
     {
         if (empty($token)) {
             throw new TelegramException('Botan token is empty!');
@@ -81,7 +88,7 @@ class Botan
         self::$token = $token;
         self::$client = new Client(['base_uri' => self::$api_base_uri, 'timeout' => $options['timeout']]);
 
-        BotanDB::initializeBotanDb();
+        BotanDB::initializeBotanDb($bot_id);
     }
 
     /**
@@ -127,13 +134,13 @@ class Botan
         $update_type = $update->getUpdateType();
 
         $update_object_names = [
-            'message'              => 'Message',
-            'edited_message'       => 'Edited Message',
-            'channel_post'         => 'Channel Post',
-            'edited_channel_post'  => 'Edited Channel Post',
-            'inline_query'         => 'Inline Query',
+            'message' => 'Message',
+            'edited_message' => 'Edited Message',
+            'channel_post' => 'Channel Post',
+            'edited_channel_post' => 'Edited Channel Post',
+            'inline_query' => 'Inline Query',
             'chosen_inline_result' => 'Chosen Inline Result',
-            'callback_query'       => 'Callback Query',
+            'callback_query' => 'Callback Query',
         ];
 
         if (array_key_exists($update_type, $update_object_names)) {
@@ -170,16 +177,12 @@ class Botan
         try {
             $response = self::$client->post(
                 sprintf(
-                    '/track?token=%1$s&uid=%2$s&name=%3$s',
-                    self::$token,
-                    $uid,
-                    urlencode($event_name)
-                ),
-                [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                    'json'    => $data,
+                    '/track?token=%1$s&uid=%2$s&name=%3$s', self::$token, $uid, urlencode($event_name)
+                ), [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $data,
                 ]
             );
 
@@ -225,10 +228,7 @@ class Botan
         try {
             $response = self::$client->post(
                 sprintf(
-                    '/s?token=%1$s&user_ids=%2$s&url=%3$s',
-                    self::$token,
-                    $user_id,
-                    urlencode($url)
+                    '/s?token=%1$s&user_ids=%2$s&url=%3$s', self::$token, $user_id, urlencode($url)
                 )
             );
 
