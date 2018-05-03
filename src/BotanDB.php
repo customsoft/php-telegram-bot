@@ -19,13 +19,21 @@ use Longman\TelegramBot\Exception\TelegramException;
 class BotanDB extends DB
 {
     /**
+     * Telegram Bot id
+     *
+     * @var string
+     */
+    protected static $bot_id = '';
+
+    /**
      * Initialize botan shortener table
      */
-    public static function initializeBotanDb()
+    public static function initializeBotanDb($bot_id = 0)
     {
         if (!defined('TB_BOTAN_SHORTENER')) {
             define('TB_BOTAN_SHORTENER', self::$table_prefix . 'botan_shortener');
         }
+        self::$bot_id = $bot_id;
     }
 
     /**
@@ -47,7 +55,8 @@ class BotanDB extends DB
             $sth = self::$pdo->prepare('
                 SELECT `short_url`
                 FROM `' . TB_BOTAN_SHORTENER . '`
-                WHERE `user_id` = :user_id
+                WHERE `bot_id` = ' . self::$bot_id . '
+                  AND `user_id` = :user_id
                   AND `url` = :url
                 ORDER BY `created_at` DESC
                 LIMIT 1
@@ -82,9 +91,9 @@ class BotanDB extends DB
         try {
             $sth = self::$pdo->prepare('
                 INSERT INTO `' . TB_BOTAN_SHORTENER . '`
-                (`user_id`, `url`, `short_url`, `created_at`)
+                (`bot_id`, `user_id`, `url`, `short_url`, `created_at`)
                 VALUES
-                (:user_id, :url, :short_url, :created_at)
+                (' . self::$bot_id . ', :user_id, :url, :short_url, :created_at)
             ');
 
             $sth->bindValue(':user_id', $user_id);
