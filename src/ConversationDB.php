@@ -17,13 +17,21 @@ use PDO;
 class ConversationDB extends DB
 {
     /**
+     * Telegram Bot id
+     *
+     * @var string
+     */
+    protected static $bot_id;
+
+    /**
      * Initialize conversation table
      */
-    public static function initializeConversation()
+    public static function initializeConversation($bot_id = 0)
     {
         if (!defined('TB_CONVERSATION')) {
             define('TB_CONVERSATION', self::$table_prefix . 'conversation');
         }
+        self::$bot_id = $bot_id;
     }
 
     /**
@@ -46,7 +54,8 @@ class ConversationDB extends DB
             $sql = '
               SELECT *
               FROM `' . TB_CONVERSATION . '`
-              WHERE `status` = :status
+              WHERE `bot_id` = ' . self::$bot_id . '
+                AND `status` = :status
                 AND `chat_id` = :chat_id
                 AND `user_id` = :user_id
             ';
@@ -91,9 +100,9 @@ class ConversationDB extends DB
 
         try {
             $sth = self::$pdo->prepare('INSERT INTO `' . TB_CONVERSATION . '`
-                (`status`, `user_id`, `chat_id`, `command`, `notes`, `created_at`, `updated_at`)
+                (`bot_id`,`status`, `user_id`, `chat_id`, `command`, `notes`, `created_at`, `updated_at`)
                 VALUES
-                (:status, :user_id, :chat_id, :command, :notes, :created_at, :updated_at)
+                (' . self::$bot_id . ', :status, :user_id, :chat_id, :command, :notes, :created_at, :updated_at)
             ');
 
             $date = self::getTimestamp();
@@ -123,7 +132,7 @@ class ConversationDB extends DB
      */
     public static function updateConversation(array $fields_values, array $where_fields_values)
     {
-        // Auto update the update_at field.
+// Auto update the update_at field.
         $fields_values['updated_at'] = self::getTimestamp();
 
         return self::update(TB_CONVERSATION, $fields_values, $where_fields_values);
